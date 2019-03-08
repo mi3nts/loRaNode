@@ -69,8 +69,8 @@ def dataIn(firstid, lastid):
     global cleanResultComb
     while True:
         dateTime = datetime.datetime.now()
-        loRaData =  ["loRa1", 90 ,20 ,23 ,42 ,24 ,13 ,12 ,0.001 ,90 ,0.001 ,90 ,20 ,23 ,42 ,24 ,13 ,12 ,0.01, 90];
-        mLR.LORAWrite(loRaData ,dateTime)
+        loRaData =  [90 ,20 ,23 ,42 ,24 ,13 ,12 ,0.001 ,90 ,0.001 ,90 ,20 ,23 ,42 ,24 ,13 ,12 ,0.01, 90];
+        mLR.LORAWrite(loRaData ,dateTime,loRaID)
         time.sleep(10)
 
         # "DateTime", "NH3", "CO", "NO2", "C3H8", "C4H10", "CH4", "H2",
