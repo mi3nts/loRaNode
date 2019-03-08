@@ -1,18 +1,36 @@
-import mysql.connector
-# import pandas as pd
+# ***************************************************************************
+#  loRaReader
+#   ---------------------------------
+#   Written by: Daniel Kiv
+#   - for -
+#   Mints: Multi-scale Integrated Sensing and Simulation
+#   ---------------------------------
+#   Date: March 8th, 2019
+#   ---------------------------------
+#   This module is written for a Mints sensor Node with LoRa Technology -
+#   This script provides a data pipeline from a gateway database
+#   --------------------------------------------------------------------------
+#   https://github.com/mi3nts
+#   http://utdmints.info/
+#  ***************************************************************************
+
+# import mysql.connector
+# # import pandas as pd
+from mintsLoRa import mintsLoRaReader as mLR
+from mintsLoRa import mintsLoRaDefinitions as mLD
+
 import csv
 import os
-import time as t
+import time
 import datetime
 
-# Written by Daniel Kiv
-# Version 0.2
+
 # This script provides a data pipeline from a gateway database
 
 # performs primary functions
 def main():
     global df1, df2, df3, dfComb
-    cnxMySQL()
+    # cnxMySQL()
     firstid = 986115
     lastid = 400
 
@@ -23,38 +41,60 @@ def main():
         # "C2H5OH", "LowPulseOccupancy", "lpoRatio", "dustconc", "Temperature",
         # "Pressure", "Humidity"])
     # fileOpen.close()
-    dataIn(firstid, lastid)
+    print("Running the example Code")
+    dataInExample()
     print("Connected to database.")
 
 # forms connection to a MySQL database
-def cnxMySQL():
-    global cnxdb
-    cnxdb = mysql.connector.connect(user='root',
-                                password='root',
-                                host='127.0.0.1',
-                                database='lora_web')
+# def cnxMySQL():
+#     global cnxdb
+#     cnxdb = mysql.connector.connect(user='root',
+#                                 password='root',
+#                                 host='127.0.0.1',
+#                                 database='lora_web')
+
+
+# ingest from database to line
+def dataInExample():
+    global cleanResultComb
+    while True:
+        dateTime = datetime.datetime.now()
+        loRaID = "loRa1"
+        loRaData =  [90 ,20 ,23 ,42 ,24 ,13 ,12 ,0.001 ,90 ,0.001 ,90 ,20 ,23 ,42 ,24 ,13 ,12 ,0.01, 90];
+        mLR.LORAWrite(loRaData ,dateTime,loRaID)
+        time.sleep(10)
 
 # ingest from database to line
 def dataIn(firstid, lastid):
     global cleanResultComb
-
     while True:
-        crs = cnxdb.cursor(buffered = True)
-        query = ("SELECT time, data FROM mergedframes WHERE id BETWEEN {:d} AND {:d}")
-        queryLast = ("SELECT id FROM mergedframes ORDER BY id DESC LIMIT 1")
+        dateTime = datetime.datetime.now()
+        loRaData =  ["loRa1", 90 ,20 ,23 ,42 ,24 ,13 ,12 ,0.001 ,90 ,0.001 ,90 ,20 ,23 ,42 ,24 ,13 ,12 ,0.01, 90];
+        mLR.LORAWrite(loRaData ,dateTime)
+        time.sleep(10)
 
-        # find most recent record at time of access based on id
-        crs.execute(queryLast)
-        for (id) in crs:
-            queryLastResult = "{}".format(id)
-        lastid = query2num(queryLastResult)
+        # "DateTime", "NH3", "CO", "NO2", "C3H8", "C4H10", "CH4", "H2",
+        # "C2H5OH", "LowPulseOccupancy", "lpoRatio", "dustconc", "Temperature",
+        # "Pressure", "Humidity"
 
-        crs.execute(query.format(firstid, lastid))
-        for (time, data) in crs:
-            queryResult = hex2char(data).split(',')
-            print(time)
-            # print(queryResult)
-            cleanResult = [float(entry) for entry in queryResult[2:]]
+
+        #
+        # crs = cnxdb.cursor(buffered = True)
+        # query = ("SELECT time, data FROM mergedframes WHERE id BETWEEN {:d} AND {:d}")
+        # queryLast = ("SELECT id FROM mergedframes ORDER BY id DESC LIMIT 1")
+        #
+        # # find most recent record at time of access based on id
+        # crs.execute(queryLast)
+        # for (id) in crs:
+        #     queryLastResult = "{}".format(id)
+        # lastid = query2num(queryLastResult)
+        # crs.execute(query.format(firstid, lastid))
+        #
+        # for (time, data) in crs:
+        #     queryResult = hex2char(data).split(',')
+        #     print(time)
+        #     # print(queryResult)
+        #     cleanResult = [float(entry) for entry in queryResult[2:]]
 
 
             # cleanResult = queryResult
@@ -89,11 +129,11 @@ def dataIn(firstid, lastid):
         # while newRecord(lastid) == False:
         #     lk = 0
         #     # print("Rechecking for update ----------------")
-        #     # t.sleep(1)
+        #     # time.sleep(1)
         #
         # # print("Performing update ----------------------")
         # firstid = lastid + 1
-    crs.close()
+    # crs.close()
 
 def newRecord(lastid):
     query = ("SELECT id FROM mergedframes WHERE id={:d}")
