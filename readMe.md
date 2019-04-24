@@ -12,6 +12,4 @@ The pins are labeled as '**thresh**', '**P1**', '**+5v**', '**P2**, and '**grnd*
  - Addition of a 10K resisitor between the threshold pin and ground:
  A good read on the mechanism followed is given [here](http://takingspace.org/wp-content/uploads/ShinyeiPPD42NS_Deconstruction_TracyAllen.pdf).
 
- -  Use of 2 outputs rather than one:
- ShSome sources suggest that pulses at the P1 output correspond to 1µm particles,
-and pulses at the P2 output correspond to 2.5µm particles
+ -  Capable of dual output
