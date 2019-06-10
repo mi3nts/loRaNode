@@ -40,7 +40,7 @@ Uses a set of 10 arduino based nodes and 1 gateway Raspberry Pi 3.
 - [Seeeduino LoRaWAN with GPS](https://www.google.com/search?q=Seeeduino+LoRaWAN+with+GPS&rlz=1CDGOYI_enUS696US696&hl=en-US&sourceid=chrome-mobile&ie=UTF-8)
 - [Grove Dust Sensor](https://www.seeedstudio.com/Grove-Dust-Sensor-PPD42NS.html)
 - [Grove Barometer Sensor: I2C protocol](https://www.seeedstudio.com/Grove-Barometer-Sensor-BMP28-p-2652.html)
-- Raspberry Pi 3 Model B
+- [Raspberry Pi 3 Model B](https://www.amazon.com/Raspberry-Pi-Model-Motherboard-Element/dp/B07CTF2GWR/ref=asc_df_B07CTF2GWR/?tag=hyprod-20&linkCode=df0&hvadid=319185484784&hvpos=1o1&hvnetw=g&hvrand=5893904611042441124&hvpone=&hvptwo=&hvqmt=&hvdev=t&hvdvcmdl=&hvlocint=&hvlocphy=9026945&hvtargid=pla-535390958326&psc=1&tag=&ref=&adgrpid=63609080556&hvpone=&hvptwo=&hvadid=319185484784&hvpos=1o1&hvnetw=g&hvrand=5893904611042441124&hvqmt=&hvdev=t&hvdvcmdl=&hvlocint=&hvlocphy=9026945&hvtargid=pla-535390958326)
 - [RHFoM301 module: serves as the communication bridge for the Raspberry Pi 3](http://www.risinghf.com/#/product-details?product_id=6&lang=en%2F)
 - [BME280 w/ Temperature, Pressure, & Humidity Readings](https://www.adafruit.com/product/2652?gclid=CJvFq_q63-ICFUi1wAod5RsHjw)
 - [Grove Multichannel Gas Sensor](https://www.arrow.com/en/products/101020088/seeed-technology-limited?gclid=CKqP4Za73-ICFdm1wAodyJsA8g) 
@@ -124,3 +124,28 @@ defaults,noatime 0
 Then restart the system.
 
 ###### Connecting to an external network
+
+```
+sudo nano
+/etcwpa_supplicant/wpa_supplicant.conf
+
+   network={
+    ssid="Test Wifi Network"
+    psk="SecretPassWord"
+    }
+    
+ sudo systemctl status pktfwd
+ sudo systemctl enable pktfwd
+ sudo systemctl restart pktfwd
+ 
+ **mysql -u root -p**
+ ```
+ 
+ ######Adjustments to the PPD42NS
+ 
+ [Diagram of PPD42NS](https://images.app.goo.gl/Z5E9UCeksRY98rgn6)
+ 
+ The pins are labeled as 'thresh', 'P1', '+5V', 'P2', and 'grnd' going from left to right on the figure given above. Addition of a 10K resistor between the threshold pin and ground: A good read on the mechanism followed is given [here](http://takingspace.org/wp-content/uploads/ShinyeiPPD42NS_Deconstruction_TracyAllen.pdf)
+ 
+- Capable of dual output
+    
