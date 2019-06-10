@@ -1,7 +1,7 @@
-#A Guide to Using the Low-Cost Sensor Network
+# A Guide to Using the Low-Cost Sensor Network
 written by, Daniel Kiv (github: marchfori)
 
-##Basics
+## Basics
 
 1. Sensors Nodes (arduino)
 
@@ -11,15 +11,15 @@ written by, Daniel Kiv (github: marchfori)
 -Weight
 -Power Requirements
 
-##Gateway Node (Raspberry Pi 3)
+## Gateway Node (Raspberry Pi 3)
 3.Useful Links
 
-##Adjustments
+## Adjustments
 4.Setting up the External Hard drive
 5.Connecting to an external network
 6.Adjustments to the PPD42NS
 
-##Basics
+## Basics
 
 The purpose of this documentation is to show how to start up and maintain the network
 of low-cost sensors that will begin deployment in the North Texas area. With the increase
@@ -32,20 +32,20 @@ LoRaWAN, a set of arduinos, and a gateway linux based Raspbery Pi 3. Combined wi
 calibration technique using machine learning algorithms, this sensor network can effectively
 provide the public with an accurate representation of air quality.
 
-######Sensor Nodes (arduino)
--Seeeduino w/ LoRaWAN and GPS capabilities
+###### Sensor Nodes (arduino)
+- Seeeduino w/ LoRaWAN and GPS capabilities
 
 Uses a set of 10 arduino based nodes and 1 gateway Raspberry Pi 3.
 
--[Seeeduino LoRaWAN with GPS](https://www.google.com/search?q=Seeeduino+LoRaWAN+with+GPS&rlz=1CDGOYI_enUS696US696&hl=en-US&sourceid=chrome-mobile&ie=UTF-8)
--[Grove Dust Sensor](https://www.seeedstudio.com/Grove-Dust-Sensor-PPD42NS.html)
--[Grove Barometer Sensor: I2C protocol](https://www.seeedstudio.com/Grove-Barometer-Sensor-BMP28-p-2652.html)
--Raspberry Pi 3 Model B
--[RHFoM301 module: serves as the communication bridge for the Raspberry Pi 3](http://www.risinghf.com/#/product-details?product_id=6&lang=en%2F)
--[BME280 w/ Temperature, Pressure, & Humidity Readings](https://www.adafruit.com/product/2652?gclid=CJvFq_q63-ICFUi1wAod5RsHjw)
--[Grove Multichannel Gas Sensor](https://www.arrow.com/en/products/101020088/seeed-technology-limited?gclid=CKqP4Za73-ICFdm1wAodyJsA8g) 
+- [Seeeduino LoRaWAN with GPS](https://www.google.com/search?q=Seeeduino+LoRaWAN+with+GPS&rlz=1CDGOYI_enUS696US696&hl=en-US&sourceid=chrome-mobile&ie=UTF-8)
+- [Grove Dust Sensor](https://www.seeedstudio.com/Grove-Dust-Sensor-PPD42NS.html)
+- [Grove Barometer Sensor: I2C protocol](https://www.seeedstudio.com/Grove-Barometer-Sensor-BMP28-p-2652.html)
+- Raspberry Pi 3 Model B
+- [RHFoM301 module: serves as the communication bridge for the Raspberry Pi 3](http://www.risinghf.com/#/product-details?product_id=6&lang=en%2F)
+- [BME280 w/ Temperature, Pressure, & Humidity Readings](https://www.adafruit.com/product/2652?gclid=CJvFq_q63-ICFUi1wAod5RsHjw)
+- [Grove Multichannel Gas Sensor](https://www.arrow.com/en/products/101020088/seeed-technology-limited?gclid=CKqP4Za73-ICFdm1wAodyJsA8g) 
 
-##Sensors
+## Sensors
 These sensors are attached to the device
 
 | Sensor Name | Description | Interface |
@@ -54,7 +54,7 @@ These sensors are attached to the device
 | Grove Barometer | Measures temperature (Celcius) and atmospheric pressure | I2C |
 | Grove Multichannel Gas Sensor | Measures Carbon Monoxide, Nitrogen Dioxide, Ethanol, Hydrogen, Ammonia, Methane, Propane,and Isobutane in ppm. | I2C |
 
-######Physical Characteristics
+###### Physical Characteristics
 
 **Dimensions** (L x W x H)
 Seeduino device dimensions with add-ons: 65mm x 55mm x 45mm.
@@ -72,14 +72,14 @@ Average power consumption during transmission 1.2W
 Voltage usage: 4.91V
 Current usage: 0.20A
 
--[3.7V Lithium Ion Battery](https://www.amazon.com/Lithium-Battery-Connector-LP803860-2000mAh/dp/B07CZFMFB3)
--[3W SEEED Solar Panel](https://cpc.farnell.com/seeed-studio/313070001/solar-panel-138x160-3w/dp/MK00376)
+- [3.7V Lithium Ion Battery](https://www.amazon.com/Lithium-Battery-Connector-LP803860-2000mAh/dp/B07CZFMFB3)
+- [3W SEEED Solar Panel](https://cpc.farnell.com/seeed-studio/313070001/solar-panel-138x160-3w/dp/MK00376)
 
-##Gateway Node (Raspberry Pi 3)
+## Gateway Node (Raspberry Pi 3)
 
 Used to collect signal broadcasts from surrounding nodes.
 
-######Useful links
+###### Useful links
 
 [Here](https://github.com/mi3nts/loRaNode) is the link to the sensor node's software. 
 If there are issues please contact me.
@@ -87,9 +87,9 @@ If there are issues please contact me.
 There is also software that synchornizes and creates the formatting for the data 
 aggregation on the gateway node.
 
-##Adjustments
+## Adjustments
 
-######Setting up the external hard drive
+###### Setting up the external hard drive
 
 Be sure the hard drive you want to use is formatted in the **_ext4_** filesystem.
 I used gparted. Then perform the following the commands in order to mount and 
