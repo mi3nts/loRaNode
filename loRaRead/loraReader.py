@@ -6,7 +6,7 @@
 #   - for -
 #   Mints: Multi-scale Integrated Sensing and Simulation
 #   ---------------------------------
-#   Date: March 8th, 2019
+#   Date: 1 July 2019
 #   ---------------------------------
 #   This module is written for a Mints sensor Node with LoRa Technology -
 #   This script provides a data pipeline from a gateway database
@@ -60,8 +60,8 @@ def main():
 def cnxMySQL():
     # for data frames
     global cnxdb
-    cnxdb = mysql.connector.connect(user='root',
-                                password='root',
+    cnxdb = mysql.connector.connect(user='XXXX',
+                                password='XXXX',
                                 host='127.0.0.1',
                                 database='lora_web')
 
