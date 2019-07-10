@@ -1,5 +1,6 @@
-/* Written by Daniel Kiv
- * Version 0.2
+ /* 
+ * Written by Daniel Kiv
+ * Version 0.5
  */
 
 #include <math.h>
@@ -12,14 +13,15 @@
 #include "MutichannelGasSensor.h"
 #include <SeeedOLED.h>
 #include <Adafruit_INA219.h>
+#include "SparkFun_SCD30_Arduino_Library.h"
 //#include <EnergySaving.h>
 
 // barometer initializations
 double pressure;
 BME280 baro;
 
-Adafruit_INA219 inaSol(0x40);
-Adafruit_INA219 inaBat(0x41);
+Adafruit_INA219 inaSol(0x41);
+Adafruit_INA219 inaBat(0x40);
 
 // initializations for dust sensor (global)
 int pinP1 = 8;
@@ -34,12 +36,18 @@ TinyGPSPlus gps;
 char buffer[256];
 char id[10];
 
+//initialization of the SCD30 CO2 Sensor
+
+SCD30 airSensor;
+
 void setup() {
 
   SerialUSB.println("System booting...");
   Wire.begin();
   oledInit();
   SeeedOled.putString("Booting...");
+  airSensor.begin(); 
+  airSensor.setMeasurementInterval(15);
   Serial.begin(9600);  // for gps readings
   Serial1.begin(9600);
   SerialUSB.begin(115200);
@@ -95,38 +103,26 @@ void setup() {
 }
 
 void loop() {
-  bool result1, result2, result3 = false;
+  bool result1, result2, result3, result4,result5 = false;
   char msg1[180] = "1,";
   char msg2[180] = "2,";
   char msg3[180] = "3,";
+  char msg4[180] = "4,";
+  char msg5[180] = "5,";
   char cat[15];
   char com[2] = ",";
-//  byte data[12] = {0};
 
 //  SerialUSB.println(millis());
   SeeedOled.clearDisplay();
-
-//  double bVoltageBat = inaBat.getBusVoltage_V();
-//  double sVoltageBat;
-//  double curBat;
-//  double powBat;
-//
-//  SerialUSB.println(inaBat.getBusVoltage_V());
-//  SerialUSB.println(inaBat.getShuntVoltage_mV());
-//  SerialUSB.println(inaBat.getCurrent_mA());
-//  SerialUSB.println(inaBat.getPower_mW());
-//  SerialUSB.println(inaSol.getBusVoltage_V());
-//  SerialUSB.println(inaSol.getShuntVoltage_mV());
-//  SerialUSB.println(inaSol.getCurrent_mA());
-//  SerialUSB.println(inaSol.getPower_mW());
   
   // collect data
-//  dustSensor(msg2); // this function collects AND builds message
   readPPD42NSMintsDuo(msg2, 15);
   double temperature = baro.getTemperature();
   double pressure = baro.getPressure();
   double humidity = baro.getHumidity();
   multiChan(msg1); // this function collects AND builds message
+  readElectric(msg4);
+  readCO2(msg5);
   
   // build message with correct precision
   append(temperature, msg3, 2);
@@ -142,6 +138,14 @@ void loop() {
   check(result2);
   result3 = lora.transferPacket(msg3);
   SerialUSB.println(msg3);
+  check(result3);
+  result4 = lora.transferPacket(msg4);
+  SerialUSB.println(msg4);
+  check(result4);
+  //CO2
+  result5 = lora.transferPacket(msg5);
+  SerialUSB.println(msg5);
+  check(result5);
 //  result = lora.transferPacket(data, 11);
   
 //    memset(payload, '\0', 200);
@@ -277,8 +281,53 @@ void validConc(double conc, char* msg) {
     }
 }
 
-void readPPD42NSMintsDuo(char *msg, uint8_t sampleTimeSeconds)  
-{
+//Read the CO2 Sensor
+
+void readCO2(char *msg){
+  float co2Lvl = airSensor.getCO2();
+  float co2Temp = airSensor.getTemperature();
+  float co2Humd = airSensor.getHumidity();
+
+  SerialUSB.print("CO2 Level (ppm) "); SerialUSB.println(airSensor.getCO2());
+  SerialUSB.print("Temperature (C) "); SerialUSB.println(airSensor.getTemperature());
+  SerialUSB.print("Humidity (%) "); SerialUSB.println(airSensor.getHumidity());
+
+  append(co2Lvl, msg, 2);
+  append(co2Temp, msg, 2);
+  append(co2Humd, msg, 0);
+}
+
+
+void readElectric(char *msg) {
+  float shuntVoltageBat  = inaBat.getShuntVoltage_mV();
+  float busVoltageBat    = inaBat.getBusVoltage_V();
+  float currentMaBat     = inaBat.getCurrent_mA();
+//  float powerMwBat      = inaBat.getPower_mW();
+  float shuntVoltageSol  = inaSol.getShuntVoltage_mV();
+  float busVoltageSol    = inaSol.getBusVoltage_V();
+  float currentMaSol     = inaSol.getCurrent_mA();
+//  float powerMwSol      = inaSol.getPower_mW();
+
+  SerialUSB.print("Bat Bus Voltage(V) "); SerialUSB.println(inaBat.getBusVoltage_V());
+  SerialUSB.print("Bat Shunt Voltage(mV) "); SerialUSB.println(inaBat.getShuntVoltage_mV());
+  SerialUSB.print("Bat Current(mA) "); SerialUSB.println(inaBat.getCurrent_mA());
+//  SerialUSB.print("Bat Power(mW) "); SerialUSB.println(inaBat.getPower_mW());
+  SerialUSB.print("Sol Bus Voltage(V) "); SerialUSB.println(inaSol.getBusVoltage_V());
+  SerialUSB.print("Sol Shunt Voltage(mV) "); SerialUSB.println(inaSol.getShuntVoltage_mV());
+  SerialUSB.print("Sol Current(mA) "); SerialUSB.println(inaSol.getCurrent_mA());
+//  SerialUSB.print("Sol Power(mW) "); SerialUSB.println(inaSol.getPower_mW());
+
+  append(shuntVoltageBat, msg, 2);
+  append(busVoltageBat, msg, 2);
+  append(currentMaBat, msg, 2);
+//  append(powerMwBat, msg, 2);
+  append(shuntVoltageSol, msg, 2);
+  append(busVoltageSol, msg, 2);
+  appendLast(currentMaSol, msg, 2);
+//  append(powerMwSol, msg, 2);
+}
+
+void readPPD42NSMintsDuo(char *msg, uint8_t sampleTimeSeconds) {
     unsigned long starttime;
     unsigned long sampletime_ms = sampleTimeSeconds*1000;
 
@@ -412,15 +461,3 @@ void gpsInit() {
     }
 #endif
 }
-
-
-//void readINA219Mints() {
-//  float shuntVoltage  = ina.getShuntVoltage_mV();
-//  float busVoltage    = ina.getBusVoltage_V();
-//  float currentMA     = ina.getCurrent_mA();
-//  float powerMW      = ina.getPower_mW();
-//  float loadVoltage  = busVoltage + (shuntVoltage / 1000);
-//
-//  SerialUSB.println(loadVoltage);
-//}
-
