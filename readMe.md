@@ -13,3 +13,7 @@ The pins are labeled as '**thresh**', '**P1**', '**+5v**', '**P2**, and '**grnd*
  A good read on the mechanism followed is given [here](http://takingspace.org/wp-content/uploads/ShinyeiPPD42NS_Deconstruction_TracyAllen.pdf).
 
  -  Capable of dual output
+ ### color code
+ 
+ - p1: green 
+ - p2: blue
