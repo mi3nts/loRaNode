@@ -1,10 +1,12 @@
- /* 
+
+/* 
  * Written by Daniel Kiv
- * Version 0.5
+ * Version 082919
+ * 
+ * Acknowledgements
+ * Adam, Nora, Shrey
  */
 
-#include <math.h>
-#include <stdio.h>  
 #include <Seeed_BME280.h>
 #include <Wire.h>
 #include <LoRaWan.h>
@@ -14,14 +16,20 @@
 #include <SeeedOLED.h>
 #include <Adafruit_INA219.h>
 #include "SparkFun_SCD30_Arduino_Library.h"
-//#include <EnergySaving.h>
+#include <Adafruit_SleepyDog.h>
+#include <EnergySaving.h>
 
 // barometer initializations
 double pressure;
 BME280 baro;
 
+EnergySaving nrgSave;
+
 Adafruit_INA219 inaSol(0x41);
 Adafruit_INA219 inaBat(0x40);
+
+//initialization of the SCD30 CO2 Sensor
+SCD30 airSensor;
 
 // initializations for dust sensor (global)
 int pinP1 = 8;
@@ -36,9 +44,7 @@ TinyGPSPlus gps;
 char buffer[256];
 char id[10];
 
-//initialization of the SCD30 CO2 Sensor
-
-SCD30 airSensor;
+int DONEPIN = A4;
 
 void setup() {
 
@@ -46,23 +52,44 @@ void setup() {
   Wire.begin();
   oledInit();
   SeeedOled.putString("Booting...");
-  airSensor.begin(); 
-  airSensor.setMeasurementInterval(15);
+  delay(1000);
   Serial.begin(9600);  // for gps readings
   Serial1.begin(9600);
   SerialUSB.begin(115200);
   lora.init();
-  lora.setDeviceReset();
-  gpsInit();
 
-  dustInit();
+  delay(1000);
+  SeeedOled.putString("1");
+  delay(1000);
+  SeeedOled.putString("2");
+  delay(1000);
+  SeeedOled.putString("Sleep start...");
+  delay(1000);
+  pinMode(DONEPIN, OUTPUT);
+  digitalWrite(DONEPIN, LOW);
+
+  delay(1000);
+
+  // do sleep
+  while (1) {
+    digitalWrite(DONEPIN, HIGH);
+    delay(1);
+    digitalWrite(DONEPIN, LOW);
+    delay(1);
+  }
+
+  SeeedOled.putString("Sleep end...");
   
+//  gpsInit();
+
+  // sensor initializations
+  dustInit();
+  airSensor.begin(); 
+  airSensor.setMeasurementInterval(30);
   if(!baro.init()) {
     SerialUSB.println("Device error!");
   }
-
   gasInit();
-
   inaBat.begin();
   inaSol.begin();
   
@@ -103,7 +130,7 @@ void setup() {
 }
 
 void loop() {
-  bool result1, result2, result3, result4,result5 = false;
+  bool result1, result2, result3, result4, result5 = false;
   char msg1[180] = "1,";
   char msg2[180] = "2,";
   char msg3[180] = "3,";
@@ -114,6 +141,8 @@ void loop() {
 
 //  SerialUSB.println(millis());
   SeeedOled.clearDisplay();
+
+  lowPower();
   
   // collect data
   readPPD42NSMintsDuo(msg2, 15);
@@ -142,7 +171,6 @@ void loop() {
   result4 = lora.transferPacket(msg4);
   SerialUSB.println(msg4);
   check(result4);
-  //CO2
   result5 = lora.transferPacket(msg5);
   SerialUSB.println(msg5);
   check(result5);
@@ -165,6 +193,45 @@ void appendLast(double data, char* msg, int precision) {
   
   dtostrf(data, 0, precision, cat);
   strcat(msg, cat);
+}
+
+void normalPower() {
+  for(unsigned char i = 7; i < 9; i ++) {
+    // pinMode(i, OUTPUT);
+    digitalWrite(i, HIGH);
+  }
+  lora.setDeviceReset();
+}
+
+void dummy(void)
+{
+    // do something
+}
+
+
+void lowPower() {
+  SeeedOled.setTextXY(2,0);
+  SeeedOled.putString("LWPOWER");
+//  SeeedOled.setTextXY(4,0);
+//  SeeedOled.putString("LWPOWER");
+for(unsigned char i = 0; i < 26; i ++)      // important, set all pins to HIGH to save power
+    {
+        pinMode(i, OUTPUT);
+        digitalWrite(i, HIGH);
+    }
+    digitalWrite(SDA, LOW); digitalWrite(SCL, LOW);
+  for(unsigned char i = 7; i < 9; i ++) {
+    pinMode(i, INPUT);
+    digitalWrite(i, LOW);
+  }
+  lora.setDeviceLowPower();
+   nrgSave.begin(WAKE_EXT_INTERRUPT, 7, dummy);    // buton on D7 to wake up the board
+   nrgSave.standby();
+  // begin sleep
+  for(unsigned char i = 0; i < 3; i ++) {
+    int sleepMS = Watchdog.sleep(5000);
+    int dummy = i;
+  }
 }
 
 void readID(char* id, char* buffer) {
@@ -281,8 +348,6 @@ void validConc(double conc, char* msg) {
     }
 }
 
-//Read the CO2 Sensor
-
 void readCO2(char *msg){
   float co2Lvl = airSensor.getCO2();
   float co2Temp = airSensor.getTemperature();
@@ -292,11 +357,10 @@ void readCO2(char *msg){
   SerialUSB.print("Temperature (C) "); SerialUSB.println(airSensor.getTemperature());
   SerialUSB.print("Humidity (%) "); SerialUSB.println(airSensor.getHumidity());
 
-  append(co2Lvl, msg, 2);
+  append(co2Lvl, msg, 0);
   append(co2Temp, msg, 2);
-  append(co2Humd, msg, 0);
+  appendLast(co2Humd, msg, 2);
 }
-
 
 void readElectric(char *msg) {
   float shuntVoltageBat  = inaBat.getShuntVoltage_mV();
