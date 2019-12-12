@@ -15,5 +15,5 @@ The pins are labeled as '**thresh**', '**P1**', '**+5v**', '**P2**, and '**grnd*
  -  Capable of dual output
  ### color code
  
- - p1: green 
- - p2: blue
+ - p1: green - D3
+ - p2: blue - D4
