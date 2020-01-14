@@ -59,19 +59,14 @@ void setup() {
   SerialUSB.begin(115200);
   lora.init();
 
+  // sensor initializations ----------
   inaBat.begin();
   inaSol.begin();
-//  delay(1000);
   SerialUSB.println(batVoltage);
-
-  // do sleep
-  checkBatteryStatus(batVoltage, solVoltage);
-
-//  SeeedOled.putString("Sleep end...");
   
+  // check if the battery voltage is at threshold values
+  checkBatteryStatus(batVoltage, solVoltage);
   gpsInit();
-
-  // sensor initializations
   dustInit();
   airSensor.begin(); 
   airSensor.setMeasurementInterval(30);
@@ -80,22 +75,15 @@ void setup() {
   }
   gasInit();
 
-  
-//  starttime = millis();//get the current time for dust sensor
-
-  // LoRaWAN initializations
+  // LoRaWAN initializations ------------------------
   memset(buffer, 0, 256);
 //  lora.getVersion(buffer, 256, 1);
   lora.getId(buffer, 256, 1);
   SerialUSB.print(buffer);
-
   readID(id, buffer);
-
   lora.setKey("2B7E151628AED2A6ABF7158809CF4F3C", "2B7E151628AED2A6ABF7158809CF4F3C", NULL);
-
   lora.setDeciveMode(LWABP);
   lora.setDataRate(DR3, US915HYBRID);
-
   lora.setChannel(0, 902.3);
   lora.setChannel(1, 902.5);
   lora.setChannel(2, 902.7);
@@ -104,14 +92,11 @@ void setup() {
 //  lora.setChannel(5, 903.3, DR0, DR3);
 //  lora.setChannel(6, 903.5, DR0, DR3);
 //  lora.setChannel(7, 903.7, DR0, DR3);
-
   lora.setReceiceWindowFirst(0, 902.3);
   lora.setReceiceWindowSecond(923.3, DR3);
   lora.setAdaptiveDataRate(false);
-
   lora.setDutyCycle(false);
   lora.setJoinDutyCycle(false);
-
   lora.setPower(14);
 
   SerialUSB.println("System booted!");
