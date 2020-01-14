@@ -360,11 +360,11 @@ void validConc(double conc, char* msg) {
   char nan[5] = "nan,";
   
   if(conc >= 0) {
-      append(conc, msg, 2);
-    }
-    else {
-      strcat(msg, nan);
-    }
+    append(conc, msg, 2);
+  }
+  else {
+    strcat(msg, nan);
+  }
 }
 
 void readCO2(char *msg){
@@ -411,80 +411,80 @@ void readElectric(char *msg) {
 }
 
 void readPPD42NSMintsDuo(char *msg, uint8_t sampleTimeSeconds) {
-    unsigned long starttime;
-    unsigned long sampletime_ms = sampleTimeSeconds*1000;
+  unsigned long starttime;
+  unsigned long sampletime_ms = sampleTimeSeconds*1000;
 
-    float ratioPmMid   = 0;
-    float ratioPm10  = 0;
-    
-    float concentrationPmMid = 0;
-    float concentrationPm2_5 = 0;
-    float concentrationPm10  = 0;
+  float ratioPmMid   = 0;
+  float ratioPm10  = 0;
+  
+  float concentrationPmMid = 0;
+  float concentrationPm2_5 = 0;
+  float concentrationPm10  = 0;
 
-    boolean pmMidPinValue = HIGH;
-    boolean pm10PinValue = HIGH;
-    
-    boolean pmMidReading  = false;
-    boolean pm10Reading  = false;
-    
-    unsigned long LPOPmMid  =  0;
-    unsigned long LPOPm10 =  0;
-    
-    unsigned long readingTimePmMid   =  0;
-    unsigned long readingTimePm10  =  0;
-    
-    starttime = millis();
+  boolean pmMidPinValue = HIGH;
+  boolean pm10PinValue = HIGH;
+  
+  boolean pmMidReading  = false;
+  boolean pm10Reading  = false;
+  
+  unsigned long LPOPmMid  =  0;
+  unsigned long LPOPm10 =  0;
+  
+  unsigned long readingTimePmMid   =  0;
+  unsigned long readingTimePm10  =  0;
+  
+  starttime = millis();
 
-    while ((millis() - starttime) < sampletime_ms)
-    {
-       pmMidPinValue =  digitalRead(pinP1);
-       pm10PinValue  =  digitalRead(pinP2);
+  while ((millis() - starttime) < sampletime_ms)
+  {
+     pmMidPinValue =  digitalRead(pinP1);
+     pm10PinValue  =  digitalRead(pinP2);
 
 //      For Mid Range Readings 
-       if(pmMidPinValue == LOW && pmMidReading == false) {
-          pmMidReading = true;
-          readingTimePmMid = micros();
-       }
-      
-       if(pmMidPinValue == HIGH && pmMidReading == true) {
-          LPOPmMid = LPOPmMid + (micros() - readingTimePmMid);
-          pmMidReading = false;
-       }
+     if(pmMidPinValue == LOW && pmMidReading == false) {
+        pmMidReading = true;
+        readingTimePmMid = micros();
+     }
+    
+     if(pmMidPinValue == HIGH && pmMidReading == true) {
+        LPOPmMid = LPOPmMid + (micros() - readingTimePmMid);
+        pmMidReading = false;
+     }
 
 //      For PM 10 Readings
-       if(pm10PinValue == LOW && pm10Reading == false) {
-          pm10Reading = true;
-          readingTimePm10 = micros();
-       }
-      
-       if(pm10PinValue == HIGH && pm10Reading == true) {
-         LPOPm10 = LPOPm10 + (micros() - readingTimePm10);
-         pm10Reading = false;
-       }
-   
-    }// WHILE LOOP END 
+     if(pm10PinValue == LOW && pm10Reading == false) {
+        pm10Reading = true;
+        readingTimePm10 = micros();
+     }
     
-    ratioPmMid  = LPOPmMid/(sampletime_ms*10.0);
-    ratioPm10   = LPOPm10/(sampletime_ms*10.0);
+     if(pm10PinValue == HIGH && pm10Reading == true) {
+       LPOPm10 = LPOPm10 + (micros() - readingTimePm10);
+       pm10Reading = false;
+     }
+ 
+  }// WHILE LOOP END 
+  
+  ratioPmMid  = LPOPmMid/(sampletime_ms*10.0);
+  ratioPm10   = LPOPm10/(sampletime_ms*10.0);
 
-    concentrationPmMid = 1.1*pow(ratioPmMid,3)-3.8*pow(ratioPmMid,2)+520*ratioPmMid+0.62; // using spec sheet curve
-    concentrationPm10  = 1.1*pow(ratioPm10,3)-3.8*pow(ratioPm10,2)+520*ratioPm10+0.62; // using spec sheet curve
-    concentrationPm2_5 = concentrationPm10 - concentrationPmMid ;
+  concentrationPmMid = 1.1*pow(ratioPmMid,3)-3.8*pow(ratioPmMid,2)+520*ratioPmMid+0.62; // using spec sheet curve
+  concentrationPm10  = 1.1*pow(ratioPm10,3)-3.8*pow(ratioPm10,2)+520*ratioPm10+0.62; // using spec sheet curve
+  concentrationPm2_5 = concentrationPm10 - concentrationPmMid ;
 
-    append(LPOPmMid, msg, 0);
-    append(ratioPmMid, msg, 2);
-    append(concentrationPmMid, msg, 2);
-    append(LPOPm10, msg, 0);
-    append(ratioPm10, msg, 2);
-    appendLast(concentrationPm10, msg, 2);
-    
-    SerialUSB.print("lpoMID; "); SerialUSB.println(LPOPmMid);
-    SerialUSB.print("ratMid; "); SerialUSB.println(ratioPmMid);
-    SerialUSB.print("cPmMid; "); SerialUSB.println(concentrationPmMid);
-    SerialUSB.print("lpoPM10; "); SerialUSB.println(LPOPm10);
-    SerialUSB.print("ratPM10; "); SerialUSB.println(ratioPm10);
-    SerialUSB.print("cPm10; "); SerialUSB.println(concentrationPm10);
-    SerialUSB.print("cPm25; "); SerialUSB.println(concentrationPm2_5);
+  append(LPOPmMid, msg, 0);
+  append(ratioPmMid, msg, 2);
+  append(concentrationPmMid, msg, 2);
+  append(LPOPm10, msg, 0);
+  append(ratioPm10, msg, 2);
+  appendLast(concentrationPm10, msg, 2);
+  
+  SerialUSB.print("lpoMID; "); SerialUSB.println(LPOPmMid);
+  SerialUSB.print("ratMid; "); SerialUSB.println(ratioPmMid);
+  SerialUSB.print("cPmMid; "); SerialUSB.println(concentrationPmMid);
+  SerialUSB.print("lpoPM10; "); SerialUSB.println(LPOPm10);
+  SerialUSB.print("ratPM10; "); SerialUSB.println(ratioPm10);
+  SerialUSB.print("cPm10; "); SerialUSB.println(concentrationPm10);
+  SerialUSB.print("cPm25; "); SerialUSB.println(concentrationPm2_5);
 
 }
 
