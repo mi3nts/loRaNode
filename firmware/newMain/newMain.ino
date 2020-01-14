@@ -253,32 +253,6 @@ void dummy(void)
     // do something
 }
 
-
-//void lowPower() {
-//  SeeedOled.setTextXY(2,0);
-//  SeeedOled.putString("LWPOWER");
-////  SeeedOled.setTextXY(4,0);
-////  SeeedOled.putString("LWPOWER");
-//for(unsigned char i = 0; i < 26; i ++)      // important, set all pins to HIGH to save power
-//    {
-//        pinMode(i, OUTPUT);
-//        digitalWrite(i, HIGH);
-//    }
-//    digitalWrite(SDA, LOW); digitalWrite(SCL, LOW);
-//  for(unsigned char i = 7; i < 9; i ++) {
-//    pinMode(i, INPUT);
-//    digitalWrite(i, LOW);
-//  }
-//  lora.setDeviceLowPower();
-//   nrgSave.begin(WAKE_EXT_INTERRUPT, 7, dummy);    // buton on D7 to wake up the board
-//   nrgSave.standby();
-//  // begin sleep
-//  for(unsigned char i = 0; i < 3; i ++) {
-//    int sleepMS = Watchdog.sleep(5000);
-//    int dummy = i;
-//  }
-//}
-
 void readID(char* id, char* buffer) {
   char comma[2] = ",";
   
