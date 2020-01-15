@@ -44,9 +44,6 @@ char id[10];
 int DONEPIN = A4;
 
 void setup() {
-  float batVoltage = inaBat.getBusVoltage_V();
-  float solVoltage = inaSol.getBusVoltage_V();
-
   SerialUSB.println("System booting...");
   Wire.begin();
   oledInit();
@@ -63,6 +60,8 @@ void setup() {
   inaBat.begin();
   inaSol.begin();
   SerialUSB.println(batVoltage);
+  float batVoltage = inaBat.getBusVoltage_V();
+  float solVoltage = inaSol.getBusVoltage_V();
   
   // check if the battery voltage is at threshold values
   checkBatteryStatus(batVoltage, solVoltage);
