@@ -141,7 +141,7 @@ sudo nano
  **mysql -u root -p**
  ```
  
- ######Adjustments to the PPD42NS
+ ###### Adjustments to the PPD42NS
  
  [Diagram of PPD42NS](https://images.app.goo.gl/Z5E9UCeksRY98rgn6)
  
