@@ -1,6 +1,7 @@
 # LoRa Node 
-
-
+![LoraNode](https://github.com/mi3nts/loraNode/blob/master/res/lora.png)
+</br>
+</br>
 
 ## A Guide to Using the Low-Cost Sensor Network
 written by, Daniel Kiv (github: marchfori)
@@ -145,7 +146,7 @@ sudo nano
  **mysql -u root -p**
  ```
  
-#### ditional Modifications made to the PPD42NS
+#### Additional Modifications made to the PPD42NS
 ##### PPD42NS
 <img src="https://www.shinyei.co.jp/stc/eng/images/pic_PPD42_L.jpg"
      alt="shinyei"
