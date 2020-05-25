@@ -96,15 +96,23 @@ aggregation on the gateway node.
 
 #### Setting up the external hard drive
 
-Be sure the hard drive you want to use is formatted in the **_ext4_** filesystem.
-I used gparted. Then perform the following the commands in order to mount and 
-transfer your root partition to the new drive:
+Be sure the hard drive you want to use is formatted in the **_ext4_** filesystem. 
+I used gparted. Through the comman line parted can be used .
+```parted dev/sda``` [helful website](https://www.tecmint.com/create-new-ext4-file-system-partition-in-linux/)
 
+
+
+Then perform the following the commands in order to mount and 
+transfer your root partition to the new drive:
+- Checking if the HD is connected 
 ```
+sudo lshw -class disk -short 
+```
+- Mounting the HD
 sudo su
 mount /dev/sda1 /mnt
 sudo rsync -axv/ /mnt
-cp /boot/cmdline.txt/boot/cmdline.txt.bak
+cp /boot/cmdline.txt /boot/cmdline.txt.bak
 nano /boot/cmdline.txt
 ```
 Change the lines as follows:
@@ -121,7 +129,8 @@ nano /mnt/etc/fstab
 Then add the following line:
 
 ```
-/dev/sda1 / ext4
+/dev/sda1 / teamlary
+
 defaults,noatime 0
 
 ```
