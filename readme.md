@@ -119,20 +119,16 @@ cp /boot/cmdline.txt /boot/cmdline.txt.bak
 nano /boot/cmdline.txt
 
 ```
-Change the lines as follows:
+- Change the lines as follows:
 
 ```
 dwc_otg.lpm_enable=0 console=serial0,115200 console=tty1 root=/dev/sda1 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait rootdelay=5
 ```
-
-
+- Chnaging the Boot Order 
 ```
-
 nano /mnt/etc/fstab
 ```
-
 Then add the following line:
-
 ```
 /dev/sda1       /               ext4    defaults,noatime  0       1
 ```
