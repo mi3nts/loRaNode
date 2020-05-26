@@ -94,19 +94,15 @@ aggregation on the gateway node.
 
 ### Adjustments
 
-#### Setting up the external hard drive
+#### Setting up the External hard drive
 
 - Checking if the HD is connected 
 ```
 sudo lshw -class disk -short 
 ```
-
-- Be sure the hard drive you want to use is formatted in the **_ext4_** filesystem. 
-I used gparted. Through the comman line parted can be used .
-```parted dev/sda``` [helpful website](https://www.tecmint.com/create-new-ext4-file-system-partition-in-linux/)
+Be sure the hard drive you want to use is formatted in the **_ext4_** filesystem. 
 
 - Mounting the HD
-
 ```
 sudo su
 mount /dev/sda1 /mnt
@@ -132,6 +128,8 @@ Then add the following line:
 ```
 /dev/sda1       /               ext4    defaults,noatime  0       1
 ```
+Make sure to get the spacing right 
+
 Comment the SD Boot 
 ```
 #/dev/mmcblk0p7  /               ext4    defaults,noatime  0       1
