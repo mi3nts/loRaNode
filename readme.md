@@ -122,10 +122,11 @@ nano /boot/cmdline.txt
 Change the lines as follows:
 
 ```
-dwc_otg.lpm_enable=0
-console=serial0,115200 console=tty1
-root=/dev/sda1 rootfstype=ext4 elevator=deadline
-fsck.repair=yes rootwait rootdelay=5
+dwc_otg.lpm_enable=0 console=serial0,115200 console=tty1 root=/dev/sda1 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait rootdelay=5
+```
+
+
+```
 
 nano /mnt/etc/fstab
 ```
@@ -133,9 +134,11 @@ nano /mnt/etc/fstab
 Then add the following line:
 
 ```
-/dev/sda1 / teamlary
-
-defaults,noatime 0
+/dev/sda1       /               ext4    defaults,noatime  0       1
+```
+Comment the SD Boot 
+```
+#/dev/mmcblk0p7  /               ext4    defaults,noatime  0       1
 
 ```
 
