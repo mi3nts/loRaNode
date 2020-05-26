@@ -14,3 +14,5 @@ sudo pip3 install pyserial
 sudo pip3 install netifaces
 sudo pip3 install pynmea2
 ```
+# Install crontab with Nano 
+export VISUAL=nano; crontab -e
