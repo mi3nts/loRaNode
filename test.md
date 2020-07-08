@@ -5,7 +5,7 @@ pw: risinghf
 # Expand SD
 sudo raspi-config
 
-# insatall Dependancies
+# install Dependancies
 ```
 sudo apt-get install screen
 sudo apt-get install python3-pip
