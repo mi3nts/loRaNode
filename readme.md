@@ -1,25 +1,30 @@
-# A Guide to Using the Low-Cost Sensor Network
+# LoRa Node 
+![LoraNode](https://github.com/mi3nts/loraNode/blob/master/res/lora.png)
+</br>
+</br>
+
+## A Guide to Using the Low-Cost Sensor Network
 written by, Daniel Kiv (github: marchfori)
 
-## Basics
+### Basics
 
 1. Sensors Nodes (arduino)
 
-## Sensors
+### Sensors
 2. Physical Characteristics
 -Dimensions
 -Weight
 -Power Requirements
 
-## Gateway Node (Raspberry Pi 3)
+### Gateway Node (Raspberry Pi 3)
 3.Useful Links
 
-## Adjustments
+### Adjustments
 4.Setting up the External Hard drive
 5.Connecting to an external network
 6.Adjustments to the PPD42NS
 
-## Basics
+### Basics
 
 The purpose of this documentation is to show how to start up and maintain the network
 of low-cost sensors that will begin deployment in the North Texas area. With the increase
@@ -32,7 +37,7 @@ LoRaWAN, a set of arduinos, and a gateway linux based Raspbery Pi 3. Combined wi
 calibration technique using machine learning algorithms, this sensor network can effectively
 provide the public with an accurate representation of air quality.
 
-###### Sensor Nodes (arduino)
+#### Sensor Nodes (arduino)
 - Seeeduino w/ LoRaWAN and GPS capabilities
 
 Uses a set of 10 arduino based nodes and 1 gateway Raspberry Pi 3.
@@ -54,7 +59,7 @@ These sensors are attached to the device
 | Grove Barometer | Measures temperature (Celcius) and atmospheric pressure | I2C |
 | Grove Multichannel Gas Sensor | Measures Carbon Monoxide, Nitrogen Dioxide, Ethanol, Hydrogen, Ammonia, Methane, Propane,and Isobutane in ppm. | I2C |
 
-###### Physical Characteristics
+#### Physical Characteristics
 
 **Dimensions** (L x W x H)
 Seeduino device dimensions with add-ons: 65mm x 55mm x 45mm.
@@ -75,11 +80,11 @@ Current usage: 0.20A
 - [3.7V Lithium Ion Battery](https://www.amazon.com/Lithium-Battery-Connector-LP803860-2000mAh/dp/B07CZFMFB3)
 - [3W SEEED Solar Panel](https://cpc.farnell.com/seeed-studio/313070001/solar-panel-138x160-3w/dp/MK00376)
 
-## Gateway Node (Raspberry Pi 3)
+### Gateway Node (Raspberry Pi 3)
 
 Used to collect signal broadcasts from surrounding nodes.
 
-###### Useful links
+#### Useful links
 
 [Here](https://github.com/mi3nts/loRaNode) is the link to the sensor node's software. 
 If there are issues please contact me.
@@ -87,43 +92,53 @@ If there are issues please contact me.
 There is also software that synchornizes and creates the formatting for the data 
 aggregation on the gateway node.
 
-## Adjustments
+### Adjustments
 
-###### Setting up the external hard drive
+#### Setting up the External hard drive
 
-Be sure the hard drive you want to use is formatted in the **_ext4_** filesystem.
-I used gparted. Then perform the following the commands in order to mount and 
-transfer your root partition to the new drive:
+- Checking if the HD is connected 
+```
+sudo lshw -class disk -short 
+```
+Be sure the hard drive you want to use is formatted in the **_ext4_** filesystem. 
 
+- Mounting the HD
 ```
 sudo su
 mount /dev/sda1 /mnt
-sudo rsync -axv/ /mnt
-cp /boot/cmdline.txt/boot/cmdline.txt.bak
+```
+
+- Transfer your root partition to the new drive:
+```
+sudo rsync -axv / /mnt
+cp /boot/cmdline.txt /boot/cmdline.txt.bak
 nano /boot/cmdline.txt
-```
-Change the lines as follows:
 
 ```
-dwc_otg.lpm_enable=0
-console=serial0,115200 console=tty1
-root=/dev/sda1 rootfstype=ext4 elevator=deadline
-fsck.repair=yes rootwait rootdelay=5
+- Change the lines as follows:
 
+```
+dwc_otg.lpm_enable=0 console=serial0,115200 console=tty1 root=/dev/sda1 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait rootdelay=5
+```
+- Chnaging the Boot Order 
+```
 nano /mnt/etc/fstab
 ```
-
 Then add the following line:
-
 ```
-/dev/sda1 / ext4
-defaults,noatime 0
+/dev/sda1       /               ext4    defaults,noatime  0       1
+```
+Make sure to get the spacing right 
+
+Comment the SD Boot 
+```
+#/dev/mmcblk0p7  /               ext4    defaults,noatime  0       1
 
 ```
 
 Then restart the system.
 
-###### Connecting to an external network
+#### Connecting to an external network
 
 ```
 sudo nano
@@ -141,11 +156,22 @@ sudo nano
  **mysql -u root -p**
  ```
  
- ######Adjustments to the PPD42NS
+#### Additional Modifications made to the PPD42NS
+##### PPD42NS
+<img src="https://www.shinyei.co.jp/stc/eng/images/pic_PPD42_L.jpg"
+     alt="shinyei"
+     style="float: left; margin-right: 10px;" />
+     <br/>
+     
+The pins are labeled as '**thresh**', '**P1**', '**+5v**', '**P2**, and '**grnd**'  going from left to write on the figure given above. 
+
+ - Addition of a 10K resisitor between the threshold pin and ground:
+ A good read on the mechanism followed is given [here](http://takingspace.org/wp-content/uploads/ShinyeiPPD42NS_Deconstruction_TracyAllen.pdf).
+
+ -  Capable of dual output
  
- [Diagram of PPD42NS](https://images.app.goo.gl/Z5E9UCeksRY98rgn6)
+ ##### color code
  
- The pins are labeled as 'thresh', 'P1', '+5V', 'P2', and 'grnd' going from left to right on the figure given above. Addition of a 10K resistor between the threshold pin and ground: A good read on the mechanism followed is given [here](http://takingspace.org/wp-content/uploads/ShinyeiPPD42NS_Deconstruction_TracyAllen.pdf)
- 
-- Capable of dual output
+ - p1: green - D3
+ - p2: blue - D4
     
