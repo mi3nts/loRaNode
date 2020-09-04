@@ -16,7 +16,7 @@
 #include <SeeedOLED.h>
 #include <Adafruit_INA219.h>
 #include "SparkFun_SCD30_Arduino_Library.h"
-#include <Adafruit_SleepyDog.h>
+#include "TinyGPS++.h"
 
 // barometer initializations
 double pressure;
@@ -34,7 +34,6 @@ int pinP2 = 7;
 
 #define USE_GPS 1
 #ifdef USE_GPS
-#include "TinyGPS++.h"
 TinyGPSPlus gps;
 #endif
 
@@ -44,24 +43,22 @@ char id[10];
 int DONEPIN = A4;
 
 void setup() {
-  SerialUSB.println("System booting...");
-  Wire.begin();
-  oledInit();
-  SeeedOled.clearDisplay();
-  SeeedOled.setNormalDisplay();
-  SeeedOled.putString("Booting...");
-  delay(1000);
-  Serial.begin(9600);  // for gps readings
-  Serial1.begin(9600);
   SerialUSB.begin(115200);
+  Serial2.begin(9600); // gps start 
+//  oledInit();
+//  SeeedOled.clearDisplay();
+//  SeeedOled.setNormalDisplay();
+//  SeeedOled.putString("Booting...");
+  delay(2000);
+  SerialUSB.println("System booting...");
   lora.init();
+  lora.setDeviceReset();
 
   // sensor initializations ----------
   inaBat.begin();
   inaSol.begin();
   float batVoltage = inaBat.getBusVoltage_V();
   float solVoltage = inaSol.getBusVoltage_V();
-  SerialUSB.println(batVoltage);
   
   // check if the battery voltage is at threshold values
   checkBatteryStatus(batVoltage, solVoltage);
@@ -69,18 +66,15 @@ void setup() {
   dustInit();
   airSensor.begin(); 
   airSensor.setMeasurementInterval(30);
-  if(!baro.init()) {
-    SerialUSB.println("Device error!");
-  }
+  baro.init();
   gasInit();
 
   // LoRaWAN initializations ------------------------
   memset(buffer, 0, 256);
-//  lora.getVersion(buffer, 256, 1);
   lora.getId(buffer, 256, 1);
   SerialUSB.print(buffer);
   readID(id, buffer);
-  lora.setKey("2B7E151628AED2A6ABF7158809CF4F3C", "2B7E151628AED2A6ABF7158809CF4F3C", NULL);
+  lora.setKey("2B7E151628AED2A6ABF7159999CF4F3C", "2B7E151628AED2A6ABF7159999CF4F3C", NULL);
   lora.setDeciveMode(LWABP);
   lora.setDataRate(DR3, US915HYBRID);
   lora.setChannel(0, 902.3);
@@ -134,7 +128,7 @@ void dataCycle() {
   doGPS(msg3); // collect gps and append after
 
   // display data
-  screenDisplay(msg1, msg2, msg3, msg4, msg5);
+//  screenDisplay(msg1, msg2, msg3, msg4, msg5);
   
   result1 = lora.transferPacket(msg1);
   SerialUSB.println(msg1);
@@ -186,22 +180,25 @@ void checkBatteryStatus(float batVoltage, float solVoltage) {
   // checks whether there is enough sunlight based on the solar voltage
   // and then checks the battery voltage to decide if the sensor
   // must intialize a sleep state, in order to replenish battery
+  
+  batVoltage = abs(batVoltage);
+  solVoltage = abs(solVoltage);
 
   // when the battery voltage is close to overdischarging, sleep
   if (batVoltage < 3.00) {
     SerialUSB.println("Voltage LOW!");
-    SeeedOled.clearDisplay();
-    SeeedOled.setNormalDisplay();
-    SeeedOled.setTextXY(0,0); 
-    SeeedOled.putString("Voltages LOW!");
-    SeeedOled.setTextXY(0,0); 
-    SeeedOled.putString("battery voltage:");
-    SeeedOled.setTextXY(1,0); 
-    SeeedOled.putNumber(batVoltage);
-    SeeedOled.setTextXY(0,0); 
-    SeeedOled.putString("solar voltage:");
-    SeeedOled.setTextXY(2,0); 
-    SeeedOled.putNumber(solVoltage);
+//    SeeedOled.clearDisplay();
+//    SeeedOled.setNormalDisplay();
+//    SeeedOled.setTextXY(0,0); 
+//    SeeedOled.putString("Voltages LOW!");
+//    SeeedOled.setTextXY(0,0); 
+//    SeeedOled.putString("battery voltage:");
+//    SeeedOled.setTextXY(1,0); 
+//    SeeedOled.putNumber(batVoltage);
+//    SeeedOled.setTextXY(0,0); 
+//    SeeedOled.putString("solar voltage:");
+//    SeeedOled.setTextXY(2,0); 
+//    SeeedOled.putNumber(solVoltage);
     delay(1000);
     digitalWrite(DONEPIN, HIGH);
     delay(1);
@@ -210,20 +207,20 @@ void checkBatteryStatus(float batVoltage, float solVoltage) {
   }
   
   // when night, if voltage is too low, sleep until battery voltage increases
-  if (solVoltage < 7.00 && batVoltage < 3.10) {
+  if (solVoltage < 5.50 && batVoltage < 3.10) {
     SerialUSB.println("Voltage LOW!");
-    SeeedOled.clearDisplay();
-    SeeedOled.setNormalDisplay();
-    SeeedOled.setTextXY(0,0); 
-    SeeedOled.putString("Voltages LOW!");
-    SeeedOled.setTextXY(0,0); 
-    SeeedOled.putString("battery voltage:");
-    SeeedOled.setTextXY(1,0); 
-    SeeedOled.putNumber(batVoltage);
-    SeeedOled.setTextXY(0,0); 
-    SeeedOled.putString("solar voltage:");
-    SeeedOled.setTextXY(2,0); 
-    SeeedOled.putNumber(solVoltage);
+//    SeeedOled.clearDisplay();
+//    SeeedOled.setNormalDisplay();
+//    SeeedOled.setTextXY(0,0); 
+//    SeeedOled.putString("Voltages LOW!");
+//    SeeedOled.setTextXY(0,0); 
+//    SeeedOled.putString("battery voltage:");
+//    SeeedOled.setTextXY(1,0); 
+//    SeeedOled.putNumber(batVoltage);
+//    SeeedOled.setTextXY(0,0); 
+//    SeeedOled.putString("solar voltage:");
+//    SeeedOled.setTextXY(2,0); 
+//    SeeedOled.putNumber(solVoltage);
     delay(1000);
     digitalWrite(DONEPIN, HIGH);
     delay(1);
@@ -512,20 +509,17 @@ void gpsInit() {
 #endif
   
   #ifdef USE_GPS
-    Serial.begin(9600);     // open the GPS
-//    Serial.begin(115200);
+    Serial2.begin(9600);     // open the GPS
     locked = false;
 
     while (!gps.location.isValid()) {
-      while (Serial.available() > 0) {
-        if (gps.encode(c=Serial.read())) {
-//          displayInfo();
+      while (Serial2.available() > 0) {
+        if (gps.encode(c=Serial2.read())) {
           if (gps.location.isValid()) {
-//            locked = true;
             break;
           }
         }
-//        Serial.print(c);
+        // SerialUSB.print(c);
       }
 
 //      if (locked)
@@ -535,7 +529,7 @@ void gpsInit() {
       {
         SerialUSB.println(F("No GPS detected: check wiring."));
         SerialUSB.println(gps.charsProcessed());
-        while(true);
+        break;
       } 
       else if (millis() > 20000) {
         SerialUSB.println(F("Not able to get a fix in alloted time."));     
