@@ -167,7 +167,7 @@ The pins are labeled as '**thresh**', '**P1**', '**+5v**', '**P2**, and '**grnd*
 
  - Addition of a 10K resisitor between the threshold pin and ground:
  A good read on the mechanism followed is given [here](http://takingspace.org/wp-content/uploads/ShinyeiPPD42NS_Deconstruction_TracyAllen.pdf).
-
+[useful](https://www.shadowandy.net/2015/05/arduino-dust-sensor.htm)
  -  Capable of dual output
  
  ##### color code
